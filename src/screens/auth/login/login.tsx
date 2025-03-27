@@ -2,31 +2,37 @@ import {
 	Button, Form, Input, message, Image, Checkbox,
 } from 'antd';
 import React, { useCallback, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import style from './login.module.css';
 import { AppState, useAppStore } from '../../../stores';
 import { AuthModal } from '../../../components/authModal';
 
 const appStoreSelector = (state: AppState) => ({
 	loginRequest: state.login,
+	faRequest: state.twofactorAuth,
 });
 
 export const Login:React.FunctionComponent = () => {
-	const { loginRequest } = useAppStore(appStoreSelector);
+	const { loginRequest, faRequest } = useAppStore(appStoreSelector);
 	const [loading, setLoading] = useState<boolean>(false);
-
+	const history = useHistory();
 	const handleLoginFormSubmit = useCallback(async (value: any) => {
 		setLoading(true);
 		try {
 			console.log(value);
 			await loginRequest(value);
 		} catch (error:any) {
+			if (error?.message === '2FA_REQUIRED') {
+				message.success('2FA Required. OTP is sent to your email');
+				setLoading(false);
+				faRequest(true);
+				history.replace('/login/2fa');
+				return;
+			}
 			message.error(error?.message ?? error);
 			setLoading(false);
 		}
-
-		console.log(value);
-	}, [loginRequest]);
+	}, [loginRequest, faRequest, history]);
 
 	return (
 		<AuthModal title="Login Into Your Account">

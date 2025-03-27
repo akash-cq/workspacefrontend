@@ -19,6 +19,7 @@ const appStoreSelector = (state: AppState) => ({
 	appLoading: state.appLoading,
 	appLoadingText: state.appLoadingText,
 	sessionData: state.sessionData,
+	twofactor: state.is2fa,
 	init: state.init,
 });
 
@@ -30,6 +31,7 @@ export function App(): JSX.Element {
 		appLoading,
 		appLoadingText,
 		sessionData,
+		twofactor,
 		init,
 	} = useAppStore(appStoreSelector);
 
@@ -79,9 +81,10 @@ export function App(): JSX.Element {
 			tip={appLoadingText}
 		>
 
-			{(sessionData == null && !appLoading && initialLoadComplete)
+			{(sessionData == null && !appLoading && initialLoadComplete && !twofactor)
 				? (<AuthScreen />)
 				: null}
+			{sessionData == null && twofactor ? <AuthScreen /> : null}
 			{
 				initialConnectionEstablished ? (
 					<MainScreen />

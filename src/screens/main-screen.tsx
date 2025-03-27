@@ -8,6 +8,7 @@ import { Login, Signup } from './auth';
 import { Forgot } from './auth/forgot';
 import { ResetPassword } from './auth/resetPassword';
 import { CustomInviteLinkJoin } from './custom-invite-link';
+import TwoFactorAuth from './auth/twofactor/twofactor';
 
 export const MainScreen: React.FunctionComponent = () => (
 	<Switch>
@@ -38,8 +39,11 @@ export const MainScreen: React.FunctionComponent = () => (
 
 export const AuthScreen: React.FunctionComponent = () => (
 	<Switch>
-		<Route path="/login">
+		<Route path="/login" exact>
 			<Login />
+		</Route>
+		<Route path="/login/2fa" exact>
+			<TwoFactorAuth />
 		</Route>
 		<Route path="/signup">
 			<Signup />

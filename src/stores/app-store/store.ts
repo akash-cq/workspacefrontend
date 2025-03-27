@@ -19,146 +19,165 @@ enum AppAction {
 }
 
 export interface AppState {
-	disabled: boolean
-	initialConnectionEstablished: boolean
-	appLoading: boolean
-	appLoadingText: string
-	channelsLoading: boolean
-	messagesLoading: boolean
-	sessionData: any | null
-	connected: boolean
-	currentWorkspace: any | null
-	workspaces: any[] | null
-	channels: any[] | null
-	dms: any[] | null
-	currentChannel: any | null
-	likedMessageIds: any | null
-	messages: any | null
-	workspaceUsersData: any | null
-	channelUsersData: any | null
-	userActivity: any | null
-	activeWorkspaceId: string
-	activeChannelId: string
+  disabled: boolean;
+  initialConnectionEstablished: boolean;
+  appLoading: boolean;
+  appLoadingText: string;
+  channelsLoading: boolean;
+  messagesLoading: boolean;
+  sessionData: any | null;
+  connected: boolean;
+  currentWorkspace: any | null;
+  workspaces: any[] | null;
+  channels: any[] | null;
+  dms: any[] | null;
+  currentChannel: any | null;
+  likedMessageIds: any | null;
+  messages: any | null;
+  workspaceUsersData: any | null;
+  channelUsersData: any | null;
+  userActivity: any | null;
+  activeWorkspaceId: string;
+  activeChannelId: string;
+  is2fa: boolean | null;
+  init: () => Promise<void>;
 
-	init: () => Promise<void>
+  login: (loginPayload: {
+    email: string;
+    password: string;
+    rememberMe: boolean;
+  }) => Promise<void>;
+  signup: (signupPayload: {
+    email: string;
+    password: string;
+    name: string;
+    token: string;
+  }) => Promise<void>;
+  forgotPassword: (forgotPasswordPayload: {
+    email: string;
+    reCaptcha: string;
+  }) => Promise<void>;
+  validatePasswordResetToken: (token: string) => Promise<void>;
+  resetPassword: (resetPasswordPayload: {
+    password: string;
+    token: string;
+  }) => Promise<void>;
+  logout: () => Promise<void>;
 
-	login: (loginPayload: { email: string, password: string, rememberMe: boolean }) => Promise<void>
-	signup: (signupPayload: { email: string, password: string, name: string, token: string }
-	) => Promise<void>
-	forgotPassword: (forgotPasswordPayload: { email: string, reCaptcha: string }) => Promise<void>
-	validatePasswordResetToken: (token: string) => Promise<void>
-	resetPassword: (resetPasswordPayload: { password: string, token: string }) => Promise<void>
-	logout: () => Promise<void>
+  setCurrentWorkspace: (workspaceId: string) => Promise<boolean>;
+  createWorkspace: (name: string, userIdsToAdd?: string[]) => Promise<string>;
+  getWorkspaces: (
+    isAdvanced?: boolean,
+    courseId?: string,
+    workspaceId?: string,
+    channelId?: string,
+    messageId?: string
+  ) => Promise<string>;
 
-	setCurrentWorkspace: (workspaceId: string) => Promise<boolean>
-	createWorkspace: (name: string, userIdsToAdd?: string[]) => Promise<string>
-	getWorkspaces: (
-		isAdvanced?: boolean, courseId?: string, workspaceId?: string,
-		channelId?: string, messageId?: string
-	) => Promise<string>
+  setCurrentChannel: (channelId: string) => Promise<boolean>;
+  updateChannelLastSeen: (channelId: string) => Promise<void>;
+  getChannels: (
+    workspaceId: string,
+    setLoading?: boolean,
+    goToChannelId?: string
+  ) => Promise<void>;
+  createChannel: (
+    name: string,
+    type?: ChannelKind,
+    userIdsToAdd?: string[]
+  ) => Promise<void | string>;
+  deleteChannel: (channelId: string) => Promise<void>;
+  twofactorAuth: (twofactorAuthPayload: boolean) => Promise<void>;
+  twofactorsubmit: (twofactorAuthPayload: { otp: string }) => Promise<void>;
+  updateChannelName: (name: string) => Promise<void>;
+  updateChannelPermission: (
+    channelWritePermissionType: string
+  ) => Promise<void>;
+  addUserInChannel: (userEmail: string) => Promise<void>;
+  removeUserFromChannel: (userIdToRemove: string) => Promise<any>;
+  addBatchInChannel: (batchId: string) => Promise<void>;
+  editChannelInviteLink: (inviteLinkSuffix: string) => Promise<void>;
+  customLinkJoin: (suffix: string) => Promise<void>;
 
-	setCurrentChannel: (channelId: string) => Promise<boolean>
-	updateChannelLastSeen: (channelId: string) => Promise<void>
-	getChannels: (workspaceId: string, setLoading?: boolean, goToChannelId?: string) => Promise<void>
-	createChannel: (
-		name: string, type?: ChannelKind, userIdsToAdd?: string[]
-	) => Promise<void | string>
-	deleteChannel: (channelId: string) => Promise<void>
-	updateChannelName: (name: string) => Promise<void>
-	updateChannelPermission: (channelWritePermissionType: string) => Promise<void>
-	addUserInChannel: (userEmail: string) => Promise<void>
-	removeUserFromChannel: (userIdToRemove: string) => Promise<any>
-	addBatchInChannel: (batchId: string) => Promise<void>
-	editChannelInviteLink: (inviteLinkSuffix: string) => Promise<void>
-	customLinkJoin: (suffix: string) => Promise<void>
+  getMessages: (
+    limit: number,
+    messageId?: string,
+    includeLastSeen?: boolean
+  ) => Promise<string>;
+  getPrevMessages: (limit: number) => Promise<boolean>;
+  getNextMessages: (limit: number) => Promise<boolean>;
+  getReplies: (messageId: string) => Promise<void>;
+  createMessage: (
+    content: string,
+    mentions: MentionItem[],
+    attachments: any[]
+  ) => Promise<boolean>;
+  editMessage: (
+    content: string,
+    mentions: MentionItem[],
+    attachments: any[],
+    messageEditId: string | undefined
+  ) => Promise<void>;
 
-	getMessages: (
-		limit: number, messageId?: string, includeLastSeen?: boolean
-	) => Promise<string>
-	getPrevMessages: (limit: number) => Promise<boolean>
-	getNextMessages: (limit: number) => Promise<boolean>
-	getReplies: (messageId: string) => Promise<void>
-	createMessage: (content: string, mentions: MentionItem[], attachments: any[]) => Promise<boolean>
-	editMessage: (content: string, mentions: MentionItem[], attachments: any[],
-		messageEditId: string | undefined) => Promise<void>
+  editReply: (
+    content: string,
+    mentions: MentionItem[],
+    attachments: any[],
+    messageEditId: string | undefined,
+    replytoparentid: string
+  ) => Promise<void>;
+  createReply: (
+    content: string,
+    mentions: MentionItem[],
+    attachments: any[],
+    messageId: string
+  ) => Promise<void>;
 
-	editReply: (content: string, mentions: MentionItem[], attachments: any[],
-		messageEditId: string | undefined, replytoparentid: string) => Promise<void>
-	createReply: (
-		content: string, mentions: MentionItem[], attachments: any[], messageId: string
-	) => Promise<void>
+  deleteMessage: (messageId: string) => Promise<void>;
 
-	deleteMessage: (
-		messageId: string
-	) => Promise<void>
+  verifyMessage: (messageId: string, isResolved: boolean) => Promise<void>;
 
-	verifyMessage: (
-		messageId: string,
-		isResolved: boolean,
-	) => Promise<void>
+  getPinMessageDetails: (messageId: string) => Promise<void>;
 
-	getPinMessageDetails: (
-		messageId: string,
-	) => Promise<void>
+  discussionRequiredToggle: (
+    messageId: string,
+    isDiscussionRequired: boolean
+  ) => Promise<void>;
 
-	discussionRequiredToggle: (
-		messageId: string,
-		isDiscussionRequired: boolean,
-	) => Promise<void>
+  notificationMessageToggle: (
+    messageId: string,
+    isNotification: boolean
+  ) => Promise<void>;
 
-	notificationMessageToggle: (
-		messageId: string,
-		isNotification: boolean,
-	) => Promise<void>
+  getOnlineUsers: () => Promise<void>;
 
-	getOnlineUsers: (
+  getUsersListByNamePrefix: (payload: any) => Promise<void>;
 
-	) => Promise<void>
+  getChannelUsersList: (payload: any) => Promise<void>;
 
-	getUsersListByNamePrefix: (
-		payload: any
-	) => Promise<void>
+  likeMessage: (messageId: string, isLiked: boolean) => Promise<void>;
 
-	getChannelUsersList: (
-		payload: any
-	) => Promise<void>
+  unLikeMessage: (messageId: string, isUnLiked: boolean) => Promise<void>;
 
-	likeMessage: (
-		messageId: string,
-		isLiked: boolean,
-	) => Promise<void>
+  pinMessage: (messageId: string) => Promise<void>;
 
-	unLikeMessage: (
-		messageId: string,
-		isUnLiked: boolean,
-	) => Promise<void>
+  unPinMessage: (messageId: string) => Promise<void>;
 
-	pinMessage: (
-		messageId: string,
-	) => Promise<void>
+  deleteReply: (replyId: string, messageId: string) => Promise<void>;
 
-	unPinMessage: (
-		messageId: string,
-	) => Promise<void>
+  uploadAttachment: (data: unknown) => Promise<string>;
 
-	deleteReply: (
-		replyId: string,
-		messageId: string
-	) => Promise<void>
+  readNotification: (notificationId: string) => Promise<void>;
 
-	uploadAttachment: (data: unknown) => Promise<string>
+  getUserActivity: (limit: number, isPrevious?: boolean) => Promise<boolean>;
 
-	readNotification: (notificationId: string) => Promise<void>
+  getBatchUserIds: (batchIds: string[]) => Promise<any>;
 
-	getUserActivity: (limit: number, isPrevious?: boolean) => Promise<boolean>
+  leaveChannel: (channelId: string) => Promise<boolean>;
 
-	getBatchUserIds: (batchIds: string[]) => Promise<any>
+  getProfileUploadUrl: () => string;
 
-	leaveChannel: (channelId: string) => Promise<boolean>
-
-	getProfileUploadUrl: () => string,
-
-	setProfile: (data: { [key: string]: string }) => Promise<void>
+  setProfile: (data: { [key: string]: string }) => Promise<void>;
 }
 
 const initialState: AppState = {
@@ -182,6 +201,7 @@ const initialState: AppState = {
 	userActivity: null,
 	activeWorkspaceId: '',
 	activeChannelId: '',
+	is2fa: null,
 
 	init: async () => { },
 	login: async () => { },
@@ -190,7 +210,8 @@ const initialState: AppState = {
 	validatePasswordResetToken: async () => { },
 	resetPassword: async () => { },
 	logout: async () => { },
-
+	twofactorsubmit: async () => { },
+	twofactorAuth: async () => { },
 	setCurrentWorkspace: async () => false,
 	createWorkspace: async () => '',
 	getWorkspaces: async () => '',
@@ -1085,7 +1106,22 @@ export function createAppStore(cqWorkspacesClient: CQWorkspacesClient): UseStore
 					throw new Error(error?.message ?? error);
 				}
 			},
-
+			twofactorsubmit: async (twofactorAuthPayload) => {
+				try {
+				await cqWorkspacesClient.twofactor(twofactorAuthPayload.otp);
+				} catch (error: any) {
+					throw new Error(error?.message ?? error);
+				}
+			},
+			twofactorAuth: async (twofactorAuthPayload:boolean | null) => {
+				try {
+					set({
+						is2fa: twofactorAuthPayload,
+					});
+				} catch (error: any) {
+					throw new Error(error?.message ?? error);
+				}
+			},
 			setCurrentWorkspace: async (workspaceId: string) => {
 				const {
 					workspaces, currentWorkspace, currentChannel,

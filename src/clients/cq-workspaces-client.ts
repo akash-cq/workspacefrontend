@@ -318,7 +318,26 @@ export class CQWorkspacesClient extends (EventEmitter as new () => TypedEmitter<
 			this.getSessionData();
 			this.connectSocket();
 		} catch (error: any) {
+			if (error?.response?.status === 403) {
+				throw new Error('2FA_REQUIRED');
+			}
 			throw new Error(error?.message ?? 'Somthing went wrong try again.');
+		}
+	};
+
+	twofactor = async (twofactorPayload: string): Promise<any> => {
+		try {
+			console.log('Sending:', twofactorPayload); // Debugging: Check JSON format
+			const response = await this._cqAPI.post('/auth/twofactor', { twofactor: twofactorPayload });
+			if (response.data.error) {
+				throw new Error(response.data.error);
+			}
+			console.log('2fa success');
+			this.getSessionData();
+			this.connectSocket();
+		} catch (error: any) {
+			console.log(error);
+			throw new Error(error?.message ?? 'Something went wrong try again.');
 		}
 	};
 
