@@ -32,7 +32,8 @@
     margin-top: -8px;
 }
 
-.button {
+.button,
+.otpresend {
     background-color: #d06a2b;
     color: white;
     padding: 10px 15px;
@@ -44,6 +45,32 @@
     transition: background-color 0.3s ease;
 }
 
-.button:hover {
+.button:hover,
+.otpresend:hover {
     background-color: #b55520;
+}
+
+.recontainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: center;
+    justify-content: space-around;
+    gap: 10px;
+    margin: 10px;
+}
+
+.otpresend {
+    display: block;
+    padding: 10px 5px;
+    width: 50%;
+}
+
+.notallowed {
+    cursor: not-allowed;
+    background-color: #a83d04af;
+}
+.notallowed:hover{
+    background-color: #a83d04af;
+    cursor: not-allowed;
 }

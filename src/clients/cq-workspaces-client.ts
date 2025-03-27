@@ -374,6 +374,18 @@ export class CQWorkspacesClient extends (EventEmitter as new () => TypedEmitter<
 		}
 	};
 
+	ResendOtp = async (): Promise<any> => {
+			try {
+				const response = await this._cqAPI.get('/auth/twofactorResend');
+				console.log(response);
+				return true;
+			} catch (err: any) {
+			console.log(err);
+
+				throw new Error(err?.message ?? 'something is wrong.');
+			}
+	};
+
 	resetPassword = async (payload: { password: string, token: string }): Promise<void> => {
 		try {
 			const response = await this._cqAPI.post('/auth/resetPassword', payload);

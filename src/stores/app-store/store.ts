@@ -63,7 +63,7 @@ export interface AppState {
     token: string;
   }) => Promise<void>;
   logout: () => Promise<void>;
-
+  resend: () => Promise<any>;
   setCurrentWorkspace: (workspaceId: string) => Promise<boolean>;
   createWorkspace: (name: string, userIdsToAdd?: string[]) => Promise<string>;
   getWorkspaces: (
@@ -212,6 +212,7 @@ const initialState: AppState = {
 	logout: async () => { },
 	twofactorsubmit: async () => { },
 	twofactorAuth: async () => { },
+	resend: async () => { },
 	setCurrentWorkspace: async () => false,
 	createWorkspace: async () => '',
 	getWorkspaces: async () => '',
@@ -1120,6 +1121,17 @@ export function createAppStore(cqWorkspacesClient: CQWorkspacesClient): UseStore
 					});
 				} catch (error: any) {
 					throw new Error(error?.message ?? error);
+				}
+			},
+			resend: async () => {
+				try {
+				const response = await cqWorkspacesClient.ResendOtp();
+				if (response) {
+					return true;
+				}
+				return false;
+				} catch (err:any) {
+					throw new Error(err?.message ?? 'something is wrong');
 				}
 			},
 			setCurrentWorkspace: async (workspaceId: string) => {
