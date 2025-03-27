@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { message } from 'antd';
+import { Button, message } from 'antd';
 import { AppState, useAppStore } from '../../../stores';
 import { AuthModal } from '../../../components/authModal';
 import styles from './TwofactorAuth.module.css';
@@ -20,10 +20,15 @@ const TwoFactorAuth: React.FunctionComponent = () => {
   const changeOtp = useCallback(() => {
       setTimeout(() => {
         setResend(true);
-      }, 2000);
+      }, 120000);
   }, []);
   useEffect(() => {
-    changeOtp();
+    if (localStorage.getItem('is')) {
+      setOtpre(true);
+      setResend(true);
+    } else {
+      changeOtp();
+    }
   }, [changeOtp]);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,6 +37,7 @@ const TwoFactorAuth: React.FunctionComponent = () => {
         throw new Error('OTP must be a 4-digit number');
       } else {
         await twofactor({ otp });
+        localStorage.clear();
       }
       } catch (err: any) {
         if (err.message !== '2FA_Required') {
@@ -48,6 +54,7 @@ const TwoFactorAuth: React.FunctionComponent = () => {
           if (response) {
             message.success('otp Re-send successfuly');
             setOtpre(true);
+            localStorage.setItem('is', JSON.stringify('true'));
           } else {
             throw new Error('something is Wrong');
           }
@@ -60,24 +67,35 @@ const TwoFactorAuth: React.FunctionComponent = () => {
   return (
     <AuthModal title="Two-Factor Authentication">
       <>
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <input
-          type="text"
-          id="otp"
-          value={otp}
-          onChange={handleChange}
-          maxLength={6}
-          className={styles.input}
-          placeholder="Enter 4-digit OTP"
-        />
-         <button type="submit" className={styles.button}> Submit</button>
-      </form>
-      { isResend && (
-        <p className={styles.recontainer}>
-          Don&apos;t received the otp?&nbsp;&nbsp;
-        <button type="submit" onClick={requestOtp} className={`${styles.otpresend} ${optRe ? styles.notallowed : ''}`}>Re-Send</button>
-        </p>
-      )}
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <input
+            type="text"
+            id="otp"
+            value={otp}
+            onChange={handleChange}
+            maxLength={6}
+            className={styles.input}
+            placeholder="Enter 4-digit OTP"
+          />
+          <Button type="primary" className={styles.button}>
+            {' '}
+            Submit
+          </Button>
+        </form>
+        {isResend && (
+          <p className={styles.recontainer}>
+            Don&apos;t received the otp?&nbsp;&nbsp;
+            <Button
+              type="primary"
+              onClick={requestOtp}
+              className={`${styles.otpresend} ${
+                optRe ? styles.notallowed : ''
+              }`}
+            >
+              Re-Send
+            </Button>
+          </p>
+        )}
       </>
     </AuthModal>
   );
