@@ -18,9 +18,10 @@ const TwoFactorAuth: React.FunctionComponent = () => {
     setOtp(e.target.value);
   };
   const changeOtp = useCallback(() => {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         setResend(true);
-      }, 120000);
+      }, 60000);
+      return () => clearTimeout(timer);
   }, []);
   useEffect(() => {
     if (localStorage.getItem('is')) {
@@ -73,7 +74,7 @@ const TwoFactorAuth: React.FunctionComponent = () => {
             id="otp"
             value={otp}
             onChange={handleChange}
-            maxLength={6}
+            maxLength={4}
             className={styles.input}
             placeholder="Enter 4-digit OTP"
           />
